@@ -1,26 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>안녕하세요~</title>
-</head>
-<body>
-    <h1>{{ question.subject }}</h1>
-    <h3>{{ question.content }}</h3>
-    <div>
-        <ul>
-            {% for answer in question.answer_set.all %}
-            <li>{{ answer.content }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <!-- 답변 등록 폼 -->
-    <form action="{% url 'board:answer_create' question.id %}" method="post">
-        {% csrf_token %}    <!-- form에는 필수로 넣어주기 forbidden 403 오류 -->
-        <div>
-            <textarea name="content" rows="10" cols="50"></textarea>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3">
+    <section id = "detail">
+        <h2 class="border-bottom py-2">{{ question.subject }}</h2>
+        <div class="card my-3">
+            <div class="card-body">
+                <div class="card-text" style="white-space: pre-line">   <!-- 줄바꿈: white-space: pre-line -->
+                    {{ question.content }}
+                </div>
+            </div>
         </div>
-        <button type="submit">답변 등록</button>
-    </form>
-</body>
-</html>
+        <h5 class="border-bottom my-3 py-2">{{ question.answer_set.count }}개의 답변이 있습니다.</h5>
+        {% for answer in question.answer_set.all %}
+        <div class="card my-3">
+            <div class="card-body">
+                <div class="card-text" style="white-space: pre-line">
+                    {{ answer.content }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- 답변 등록 폼 -->
+        <form action="{% url 'board:answer_create' question.id %}" method="post" class="mb-3">
+            {% csrf_token %}    <!-- form에는 필수. 넣어주지 않으면 forbidden 403 권한 에러 발생-->
+                        <!-- 유효성 검사(오류 처리) 시작 -->
+            {% if form.errors %}
+                <div  class="alert alert-danger">
+                {% for field in form %}     <!-- 폼의 필드를 순회하면서 -->
+                    {% if field.errors %}   <!-- 필드에 오류가 있으면 -->
+                        <strong>{{ field.label }}</strong>
+                        {{ field.errors }}  <!-- 에러 출력 -->
+                    {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+            <!-- 오류 처리 끝 -->
+            <div class="form-group">
+                <textarea name="content" rows="10" cols="50" class="form-control mb-3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">답변 등록</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

@@ -42,7 +42,7 @@ def question_create(request):
 def answer_create(request, question_id):
     # 질문이 1개 지정되어야 답변을 등록할 수 있음
     question = Question.objects.get(id=question_id)
-    if request.method == "POST":
+    if request.method == "POST":    # 소문자(post)이면 답변이 등록되지 않음
         form = AnswerForm(request.POST)
         if form.is_valid():
             answer = form.save(commit=False)        # content만 저장
@@ -53,5 +53,5 @@ def answer_create(request, question_id):
     else:
         form = AnswerForm()     # 빈 폼 생성
     context = {'question': question, 'form': form}
-    return render(request, 'board/detail.html')
+    return render(request, 'board/detail.html', context)
 
