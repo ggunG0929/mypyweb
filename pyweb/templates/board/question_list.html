@@ -10,7 +10,7 @@
         <ul>
         {% for question in question_list %}
             <li>
-                <a href="{% url 'board:detail' question.id %}">
+                <a href="{% url 'board:detail' question.id %}">     <!--url 'appname:pathname'-->
                     {{ question.subject }}
                 </a>
             </li>
@@ -19,5 +19,7 @@
     {% else %}
         <p>질문이 없습니다.</p>
     {% endif %}
+    <!-- 질문 등록 버튼 -->
+    <a href="{% url 'board:question_create' %}">질문 등록</a>
 </body>
 </html>
