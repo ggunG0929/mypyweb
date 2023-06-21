@@ -1,3 +1,37 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
 
-# Create your views here.
+from common.forms import UserForm
+
+
+# 회원 가입
+def signup(request):
+    if request.method == "POST":
+        form = UserForm(request.POST)   # 데이터가 입력된 폼    # import
+        if form.is_valid():
+            form.save()     # 회원가입 db에 저장
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)    # 자동로그인
+            return redirect('/')    # index 페이지로 이동 # import
+    else:
+        form = UserForm()   # 빈 폼 생성
+    context = {'form': form}
+    return render(request, 'common/signup.html', context)
+
+
+def signin(request):
+    if request.method == "POST":
+        form = UserForm(request.POST)   # 데이터가 입력된 폼    # import
+        if form.is_valid():
+            form.save()     # 회원가입 db에 저장
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)    # 자동로그인
+            return redirect('/')    # index 페이지로 이동 # import
+    else:
+        form = UserForm()   # 빈 폼 생성
+    context = {'form': form}
+    return render(request, 'common/signup.html', context)
