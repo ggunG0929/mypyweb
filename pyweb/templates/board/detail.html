@@ -17,6 +17,7 @@
                 <!-- 글쓴이와 로그인한 사람이 일치할때만 -->
                 {% if question.author == request.user %}
                 <div>
+                    <a href="{% url 'board:question_modify' question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
                     <a href="#"
                        data-uri="{% url 'board:question_delete' question.id %}"
                        class="delete btn btn-sm btn-outline-secondary">삭제</a>
@@ -37,6 +38,14 @@
                         <div>{{ answer.create_date }}</div>
                     </div>
                 </div>
+                <!-- 글쓴이와 로그인한 사람이 일치할때만 -->
+                {% if answer.author == request.user %}
+                <div>
+                    <a href="#"
+                       data-uri="{% url 'board:answer_delete' answer.id %}"
+                       class="delete btn btn-sm btn-outline-secondary">삭제</a>
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

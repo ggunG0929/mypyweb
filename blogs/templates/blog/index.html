@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+<!-- 사진이 들어가면 베이스에 load static이 들어갔더라도 다시 한번더 넣어준다 -->
+{% load static %}
+{% block content %}
+<div class="container my-3 text-center">
+    <h1>Blog에 오신 것을 환영합니다.</h1>
+    <div class="my-3">
+        <img src="{% static 'blog/images/easy.jpg' %}" alt="소녀">
+    </div>
+</div>
+{% endblock %}

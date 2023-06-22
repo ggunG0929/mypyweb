@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from board.models import Question
+from board.models import Question, Answer
 from board.forms import QuestionForm, AnswerForm
 
 
@@ -65,14 +65,31 @@ def answer_create(request, question_id):
     return render(request, 'board/detail.html', context)
 
 
-# 질문삭제
+# 질문 수정
+@login_required(login_url='common:login')
+def question_modify(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)  # 수정을 위해 질문 1개 가져옴
+    if request.method == "POST":
+        form = QuestionForm(request.POST, instance=question)  # 데이터가 이미 있는 폼(포스트 받은 것에서, 있는폼)
+        if form.is_valid():
+            question = form.save(commit=False)  # 가저장
+            question.modify_date = timezone.now()   # 수정일 지정
+            question.author = request.user  # 글쓴이 지정
+            question.save()     # 찐저장
+            return redirect('board:detail', question_id=question_id)
+    else:
+        form = QuestionForm(instance=question)  # 데이터가 이미 있는 폼
+    context = {'form': form}
+    return render(request, 'board/question_form.html', context)
+
+
+# 질문 삭제
 @login_required(login_url='common:login')
 def question_delete(request, question_id):
     # question = Question.objects.get(id=question_id)
     question = get_object_or_404(Question, pk=question_id)
     question.delete()
     return redirect('board:question_list')
-
 # delete 연습 (shell)
 # >>> from board.models import Question
 # >>> Question.objects.all()
@@ -87,3 +104,11 @@ def question_delete(request, question_id):
 # <QuerySet [<Question: 여름철 실내 적정온도는 얼마인가요?>, <Question: 파이썬 웹 개발 패턴인 MTV가 무엇인가요?>, <Question: 깃허브란 무엇인가요?>, <Quest
 # ion: 좋아하는 색상은?>, <Question: test>, <Question: test2>, <Question: 취미는?>]>
 # >>> quit()
+
+
+# 답변 삭제
+@login_required(login_url='common:login')
+def answer_delete(request, answer_id):
+    answer = get_object_or_404(Answer, pk=answer_id)    # import
+    answer.delete()
+    return redirect('board:detail', question_id=answer.question.id)     # question이랑 answer이랑 연결되어있으니까
