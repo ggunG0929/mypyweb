@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'common',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')    # import
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/blog/'   # 로그인 성공시 이동할 url   # 앞 슬래시를 붙여주어야 함
+LOGOUT_REDIRECT_URL = '/'

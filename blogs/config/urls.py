@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('blog/', include('blog.urls')),    # import django
+    path('common/', include('common.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,   # import django.conf
