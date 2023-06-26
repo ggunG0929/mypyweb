@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+<!-- 필터 적용하기 위해 -->
+{% load board_filter %}
 {% block content %}
 <div class="container my-3">
     <section id="question_list">
@@ -15,7 +17,17 @@
                 {% if question_list %}
                     {% for question in question_list %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>  <!-- 1부터 번호시작 -->
+                        <!--<td>{{ forloop.counter|add:3 }}</td>-->  <!-- 1부터 번호시작 -->
+                        <!-- 템플릿 태그 -->
+                        <!-- 지금 총 게시물 12개, 1페이지 12~3 , 2페이지 2~1로 뜨게 하려고 함
+                                일련번호: 12(전체 게시글 수) - 1(시작인덱스) - 0~9(현재 인덱스) + 1
+                                탬플릿 태그에는 빼기가 없기 때문에 만들어 줘야 함 - 보드필터
+                                question_list.paginator.count - 전체 게시글 수
+                                question_list.start_index - 시작인덱스
+                                forloop.counter0 - 현재인덱스
+                                엔터 치지않고 붙여서 한줄로
+                         -->
+                        <td>{{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}</td>
                         <td>
                             <a href="{% url 'board:detail' question.id %}">
                                 {{ question.subject }}
@@ -32,6 +44,59 @@
                 {% endif %}
             </tbody>
         </table>
+        <!-- 페이지 처리 영역 -->
+        <ul class="pagination justify-content-center">
+            <!-- 이전 페이지 -->
+            <!-- 이전 페이지가 있으면 이동가능한 링크달린 화살표 표시 -->
+            {% if question_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ question_list.previous_page_number }}">
+                    &laquo;     <!-- 왼쪽 겹화살표 -->
+                </a>
+            </li>
+            {% else %}
+            <!-- 이전 페이지가 없어도 링크 없는 화살표 표시(disabled) -->
+            <li class="page-item disabled">
+                <a class="page-link" href="">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+            <!-- 현재 페이지 -->
+            {% for page_number in question_list.paginator.page_range %}
+                <!-- 현재 페이지와 리스트의 페이지가 일치하면 활성화함(active) -->
+                {% if page_number == question_list.number %}
+                <li class="page-item active">
+                    <a class="page-link" href="?page={{ page_number }}">
+                        {{ page_number }}
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_number }}">
+                        {{ page_number }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            <!-- 다음 페이지 -->
+            <!-- 다음 페이지가 있으면 이동가능한 링크달린 화살표 표시 -->
+            {% if question_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ question_list.next_page_number }}">
+                    &raquo;     <!-- 오른쪽 겹화살표 -->
+                </a>
+            </li>
+            {% else %}
+            <!-- 다음 페이지가 없어도 링크 없는 화살표 표시(disabled) -->
+            <li class="page-item disabled">
+                <a class="page-link" href="">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+
         <!-- 질문 등록 버튼 -->
         <a href="{% url 'board:question_create' %}" class="btn btn-primary">질문 등록</a>   <!-- url app이름:path -->
     </section>

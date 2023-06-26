@@ -6,10 +6,11 @@ from blog.models import Post
 class PostForm(forms.ModelForm):    # import django
     class Meta:
         model = Post    # Post 객체 생성    # import
-        fields = ['title', 'content', 'photo', 'category']
+        fields = ['title', 'content', 'photo', 'file', 'category']
         labels = {
             'title': '제목',
             'content': '내용',
             'photo': '사진',
+            'file': '파일',
             'category': '분류',
         }

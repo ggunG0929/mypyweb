@@ -8,10 +8,25 @@
         {% endif %}
         <h3>{{ post.title }}</h3>
         <h5 style="white-space: pre-line; line-height: 1.5">{{ post.content }}</h5>
-        <p>작성자: {{ post.author }} (작성일: {{ post.pub_date }})</p>
-            {% if post.photo %}
+        <p>글쓴이: {{ post.author }} (작성일: {{ post.pub_date }})</p>
+        <!-- 이미지 파일이 있으면 보이기 -->
+        {% if post.photo %}
             <img src="{{ post.photo.url }}">
-            {% endif %}
+        {% endif %}
+        <!-- 파일이 있으면 보이기 -->
+        {% if post.file %}
+            <a href="{{ post.file.url }}" class="btn btn-outline-dark">
+                Download:
+                {% if post.get_file_ext == 'csv' %}
+                <i class="fa-solid fa-file-csv"></i>      <!-- 폰트어썸 아이콘 -->
+                {% elif post.get_file_ext == 'xlsx' or post.get_file_ext == 'xls' %}
+                <i class="fa-solid fa-file-excel"></i>
+                {% else %}
+                <i class="fa-solid fa-file"></i>
+                {% endif %}
+                {{ post.get_file_name }}
+            </a>
+        {% endif %}
     </section>
     <aside id="category">
         <h4>분류(Category)</h4>
