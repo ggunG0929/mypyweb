@@ -27,9 +27,6 @@ DEBUG = False   # 서버호스팅 연결을 위해 TRUE에서 FALSE로
 
 ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
