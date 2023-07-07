@@ -9,7 +9,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
     path('blog/', include('blog.urls')),    # import django
-    path('common/', include('common.urls')),
+    path('common/', include('common.urls')),    # 일반 로그인
+    path('accounts/', include('allauth.urls')),     # 소셜 로그인
 ]
 
 urlpatterns += static(settings.MEDIA_URL,   # import django.conf
