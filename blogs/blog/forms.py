@@ -1,5 +1,5 @@
 from django import forms
-from blog.models import Post
+from blog.models import Post, Comment
 
 
 # 포스트 폼 생성
@@ -14,3 +14,11 @@ class PostForm(forms.ModelForm):    # import django
             'file': '파일',
             'category': '분류',
         }
+
+
+# 댓글 폼
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment     # import
+        fields = ['content']
+        labels = {'content': '댓글 내용', }

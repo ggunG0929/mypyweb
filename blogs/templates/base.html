@@ -26,8 +26,6 @@
         <!-- 검색 및 분류 -->
         {% if total_post %}<!-- 임의로 처리) post_list, category_list에서는 분류위젯 뜨도록 -->
         <div class="col-4 col-lg-3">
-            {% if current_category %}<!-- 임의로 처리) post_list에서만 검색위젯 뜨도록 -->
-            {% else %}
             <!-- 검색 위젯 -->
             <div class="card my-3">
                 <h5 class="card-header">Search</h5>
@@ -41,7 +39,6 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
             <!-- 카테고리 위젯 -->
             <div class="card my-3">
             <h5 class="card-header">분류(Category)</h5>

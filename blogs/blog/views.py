@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from blog.forms import PostForm
-from blog.models import Post, Category
+from blog.forms import PostForm, CommentForm
+from blog.models import Post, Category, Comment
 
 
 def index(request):
@@ -83,12 +83,20 @@ def category_page(request, slug):
     categories = Category.objects.all()     # 전체 카테고리(사이드바 구현을 위해)
     all_post_list = Post.objects.all()  # 전체 게시글 목록
     total_post = len(all_post_list)     # 게시글 총 개수
+    # 검색 처리
+    kw = request.GET.get('kw', '')  # 입력폼에서 넘어온 키워드
+    if kw:
+        post_list = post_list.filter(
+            Q(title__icontains=kw) |  # 제목 검색
+            Q(content__icontains=kw) |  # 내용 검색
+            Q(author__username__icontains=kw)  # 글쓴이 검색
+        ).distinct()
     # 페이지 처리
     page = request.GET.get('page', 1)
     paginator = Paginator(post_list, 5)  # 페이지당 포스트 개수 - 5   # import
     page_obj = paginator.get_page(page)
     context = {'current_category': current_category, 'post_list': page_obj, 'categories': categories,
-               'total_post': total_post, }
+               'total_post': total_post, 'kw': kw, }
     return render(request, 'blog/post_list.html', context)
 
 
@@ -114,3 +122,47 @@ def post_modify(request, post_id):
         form = PostForm(instance=post)
     context = {'form': form, 'categories': categories, }
     return render(request, 'blog/post_form.html', context)
+
+
+# 댓글 등록
+@login_required(login_url='common:login')
+def comment_create(request, post_id):
+    post = Post.objects.get(id=post_id)     # 댓글쓰기 위한 포스트 1개 가져오기
+    if request.method == 'POST':
+        # 댓글 폼 연동
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)     #가저장
+            comment.author = request.user
+            comment.pub_date = timezone.now()
+            comment.post = post
+            form.save()
+    return redirect('blog:detail', post_id=post_id)
+
+
+# 댓글 삭제
+@login_required(login_url='common:login')
+def comment_delete(request, comment_id):
+    # 삭제할 댓글 1개 가져오기
+    comment = Comment.objects.get(id=comment_id)
+    comment.delete()
+    return redirect('blog:detail', post_id=comment.post_id)
+
+
+# 댓글 수정
+@login_required(login_url='common:login')
+def comment_modify(request, comment_id):
+    # 수정할 댓글 1개 가져오기
+    comment = Comment.objects.get(id=comment_id)
+    if request.method == "POST":
+        form = CommentForm(request.POST, instance=comment)  # 수정한 내용 가져옴
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.modify_date = timezone.now()    # 수정일시 지정
+            comment.save()
+            return redirect('blog:detail', post_id=comment.post_id)
+    else:
+        form = CommentForm(instance=comment)    # 입력된 댓글 내용 가져오기
+    context = {'form': form, }
+    return render(request, 'blog/comment_form.html', context)
